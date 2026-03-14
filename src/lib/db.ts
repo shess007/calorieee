@@ -35,4 +35,9 @@ export async function saveSettings(settings: UserSettings): Promise<void> {
   await db.settings.put({ ...settings, id: 1 });
 }
 
+export async function getDatesWithMeals(dateKeys: string[]): Promise<Set<string>> {
+  const meals = await db.meals.where("date").anyOf(dateKeys).toArray();
+  return new Set(meals.map((m) => m.date));
+}
+
 export { db };

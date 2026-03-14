@@ -6,9 +6,10 @@ interface CalorieRingProps {
   consumed: number;
   goal: number;
   size?: number;
+  onTap?: () => void;
 }
 
-export function CalorieRing({ consumed, goal, size = 220 }: CalorieRingProps) {
+export function CalorieRing({ consumed, goal, size = 220, onTap }: CalorieRingProps) {
   const animatedConsumed = useAnimatedValue(consumed);
   const radius = (size - 20) / 2;
   const circumference = 2 * Math.PI * radius;
@@ -18,7 +19,11 @@ export function CalorieRing({ consumed, goal, size = 220 }: CalorieRingProps) {
   const overBudget = consumed > goal;
 
   return (
-    <div className="relative" style={{ width: size, height: size }}>
+    <div
+      className={`relative ${onTap ? "cursor-pointer" : ""}`}
+      style={{ width: size, height: size }}
+      onClick={onTap}
+    >
       <svg
         width={size}
         height={size}
