@@ -40,4 +40,13 @@ export async function getDatesWithMeals(dateKeys: string[]): Promise<Set<string>
   return new Set(meals.map((m) => m.date));
 }
 
+export async function getCaloriesForDates(dateKeys: string[]): Promise<Map<string, number>> {
+  const meals = await db.meals.where("date").anyOf(dateKeys).toArray();
+  const map = new Map<string, number>();
+  for (const m of meals) {
+    map.set(m.date, (map.get(m.date) || 0) + m.total.kcal);
+  }
+  return map;
+}
+
 export { db };

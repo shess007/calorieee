@@ -8,7 +8,7 @@ import {
   deleteMeal as dbDeleteMeal,
   getSettings,
   saveSettings,
-  getDatesWithMeals,
+  getCaloriesForDates,
 } from "./db";
 
 function todayKey(): string {
@@ -26,7 +26,7 @@ interface FuelStore {
 
   // Day navigation
   weekOffset: number;
-  daysWithData: Set<string>;
+  dayCalories: Map<string, number>;
 
   // Computed
   totals: MacroTotals;
@@ -67,7 +67,7 @@ export const useFuelStore = create<FuelStore>((set, get) => ({
   settings: DEFAULT_SETTINGS,
   initialized: false,
   weekOffset: 0,
-  daysWithData: new Set<string>(),
+  dayCalories: new Map<string, number>(),
   totals: { kcal: 0, protein: 0, carbs: 0, fat: 0 },
 
   init: async () => {
@@ -160,7 +160,7 @@ export const useFuelStore = create<FuelStore>((set, get) => ({
 
   loadWeekIndicators: async (weekDays: Date[]) => {
     const dateKeys = weekDays.map(toDateKey);
-    const daysWithData = await getDatesWithMeals(dateKeys);
-    set({ daysWithData });
+    const dayCalories = await getCaloriesForDates(dateKeys);
+    set({ dayCalories });
   },
 }));

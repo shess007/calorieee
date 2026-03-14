@@ -15,7 +15,7 @@ export function DayNavigator() {
   const {
     selectedDate,
     weekOffset,
-    daysWithData,
+    dayCalories,
     settings,
     setSelectedDate,
     shiftWeek,
@@ -54,7 +54,9 @@ export function DayNavigator() {
             const selected = key === selectedDate;
             const today = isToday(day);
             const future = isFuture(day);
-            const hasData = daysWithData.has(key);
+            const kcal = dayCalories.get(key);
+            const hasData = kcal !== undefined;
+            const overBudget = hasData && kcal > settings.dailyCalorieGoal;
 
             let tileClasses: string;
             if (future) {
@@ -84,9 +86,13 @@ export function DayNavigator() {
                 <span className="text-[13px] leading-none mt-0.5">
                   {day.getDate()}
                 </span>
-                {/* Data dot */}
-                {hasData && !selected && (
-                  <span className="absolute bottom-1 h-1 w-1 rounded-full bg-[#7cff6b]" />
+                {/* Status bar */}
+                {hasData && (
+                  <span
+                    className={`absolute bottom-[3px] h-[2px] w-4 rounded-full ${
+                      overBudget ? "bg-[#ff6b6b]" : "bg-[#7cff6b]"
+                    } ${selected ? "opacity-60" : "opacity-100"}`}
+                  />
                 )}
               </button>
             );
