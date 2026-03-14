@@ -1,0 +1,37 @@
+import type { UserSettings } from "./types";
+
+export const DEFAULT_SETTINGS: UserSettings = {
+  dailyCalorieGoal: 2200,
+  proteinGoal: 150,
+  carbsGoal: 250,
+  fatGoal: 70,
+  language: "de",
+  quickChips: [
+    "Müsli mit Milch",
+    "Kaffee mit Milch",
+    "Brot mit Käse",
+    "Apfel",
+    "Reis mit Hähnchen",
+    "Salat mit Dressing",
+  ],
+};
+
+export const SYSTEM_PROMPT = `You are a nutrition assistant. The user describes what they ate. Return ONLY valid JSON (no markdown, no backticks) in this exact format:
+{
+  "meal_name": "Short descriptive name",
+  "items": [
+    { "name": "Item name", "grams": 150, "kcal": 250, "protein": 20, "carbs": 30, "fat": 8 }
+  ],
+  "total": { "kcal": 250, "protein": 20, "carbs": 30, "fat": 8 }
+}
+Estimate reasonable portions if not specified. Be accurate with calorie counts based on standard nutritional data. Always respond with the JSON object only.`;
+
+export const COLORS = {
+  background: "#0a0a0a",
+  text: "#e8e8e8",
+  green: "#7cff6b",
+  greenEnd: "#00d4aa",
+  yellow: "#ffd76b",
+  orange: "#ff9f6b",
+  red: "#ff6b6b",
+} as const;
