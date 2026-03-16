@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useSession } from "next-auth/react";
 import { useFuelStore } from "@/lib/store";
 import { parseDateKey, formatDateHeader, isToday } from "@/lib/date-utils";
 import { CalorieRing } from "@/components/CalorieRing";
@@ -11,6 +12,7 @@ import { DayNavigator } from "@/components/DayNavigator";
 import { GoalEditor } from "@/components/GoalEditor";
 
 export default function Home() {
+  const { status } = useSession();
   const [goalEditorOpen, setGoalEditorOpen] = useState(false);
 
   const {
@@ -28,8 +30,8 @@ export default function Home() {
   } = useFuelStore();
 
   useEffect(() => {
-    init();
-  }, [init]);
+    if (status === "authenticated") init();
+  }, [status, init]);
 
   if (!initialized) {
     return (
