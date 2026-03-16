@@ -16,7 +16,7 @@ export const DEFAULT_SETTINGS: UserSettings = {
   ],
 };
 
-export const SYSTEM_PROMPT = `You are a nutrition assistant. The user describes what they ate. Return ONLY valid JSON (no markdown, no backticks) in this exact format:
+export const SYSTEM_PROMPT = `You are a nutrition assistant. The user describes what they ate. Return ONLY valid JSON (no markdown, no backticks, no explanation) in this exact format:
 {
   "meal_name": "Short descriptive name",
   "items": [
@@ -24,7 +24,13 @@ export const SYSTEM_PROMPT = `You are a nutrition assistant. The user describes 
   ],
   "total": { "kcal": 250, "protein": 20, "carbs": 30, "fat": 8 }
 }
-Estimate reasonable portions if not specified. Be accurate with calorie counts based on standard nutritional data. Always respond with the JSON object only.`;
+Rules:
+- NEVER ask questions. NEVER add text outside the JSON.
+- Even if the input is a single word like "Butter" or "Apfel", return the JSON with a reasonable default portion.
+- If grams are specified (e.g. "30g Leberwurst"), use that exact amount.
+- If no amount is given, estimate a typical serving size.
+- Be accurate with calorie counts based on standard nutritional data.
+- The meal_name should be in the same language as the user input.`;
 
 export const COLORS = {
   background: "#0a0a0a",

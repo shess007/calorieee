@@ -36,7 +36,7 @@ export async function dbAddMeal(
                        total_kcal, total_protein, total_carbs, total_fat)
     VALUES (${meal.id}, ${userEmail}, ${meal.date}, ${meal.timestamp},
             ${meal.query}, ${meal.meal_name}, ${itemsJson}::jsonb,
-            ${meal.total.kcal}, ${meal.total.protein}, ${meal.total.carbs}, ${meal.total.fat})
+            ${Math.round(meal.total.kcal)}, ${Math.round(meal.total.protein)}, ${Math.round(meal.total.carbs)}, ${Math.round(meal.total.fat)})
   `;
 }
 
@@ -50,10 +50,10 @@ export async function dbUpdateMeal(
     UPDATE meals
     SET meal_name = ${meal.meal_name},
         items = ${itemsJson}::jsonb,
-        total_kcal = ${meal.total.kcal},
-        total_protein = ${meal.total.protein},
-        total_carbs = ${meal.total.carbs},
-        total_fat = ${meal.total.fat}
+        total_kcal = ${Math.round(meal.total.kcal)},
+        total_protein = ${Math.round(meal.total.protein)},
+        total_carbs = ${Math.round(meal.total.carbs)},
+        total_fat = ${Math.round(meal.total.fat)}
     WHERE id = ${meal.id} AND user_email = ${userEmail}
   `;
 }
