@@ -52,16 +52,6 @@ export default function Home() {
   return (
     <div className="min-h-screen w-full overflow-x-hidden animate-[fadeIn_0.6s_ease]">
       <div className="mx-auto box-border w-full max-w-[440px] px-5 pb-24 pt-10">
-        {/* Header */}
-        <div className="mb-4 text-center">
-          <div className="mb-1.5 text-[11px] uppercase tracking-[3px] text-white/25">
-            {formatDateHeader(selectedDateObj, settings.language)}
-          </div>
-          <h1 className="bg-gradient-to-br from-[#7cff6b] to-[#00d4aa] bg-clip-text text-[28px] font-bold tracking-[-1px] text-transparent">
-            Fuel
-          </h1>
-        </div>
-
         {/* Day Navigator */}
         <DayNavigator />
 

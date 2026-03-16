@@ -366,7 +366,7 @@ export function MealInput() {
       <button
         type="button"
         onClick={() => setMode("write")}
-        className="flex flex-1 cursor-pointer items-center justify-center gap-2.5 rounded-2xl border border-[#7cff6b]/15 bg-[#7cff6b]/[0.07] py-4 text-[#7cff6b]/70 transition-all hover:border-[#7cff6b]/25 hover:bg-[#7cff6b]/[0.12] hover:text-[#7cff6b]"
+        className="flex flex-1 cursor-pointer items-center justify-center rounded-2xl border border-[#7cff6b]/15 bg-[#7cff6b]/[0.07] py-4 text-[#7cff6b]/70 transition-all hover:border-[#7cff6b]/25 hover:bg-[#7cff6b]/[0.12] hover:text-[#7cff6b]"
         aria-label="Text input"
       >
         <svg
@@ -376,17 +376,38 @@ export function MealInput() {
           strokeWidth={2}
           strokeLinecap="round"
           strokeLinejoin="round"
-          className="h-5 w-5"
+          className="h-6 w-6"
         >
           <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
           <path d="m15 5 4 4" />
         </svg>
-        <span className="text-sm font-medium">Schreiben</span>
       </button>
+      {micSupported && (
+        <button
+          type="button"
+          onClick={handleMicTap}
+          className="flex flex-1 cursor-pointer items-center justify-center rounded-2xl border border-[#b06bff]/15 bg-[#b06bff]/[0.07] py-4 text-[#b06bff]/70 transition-all hover:border-[#b06bff]/25 hover:bg-[#b06bff]/[0.12] hover:text-[#b06bff]"
+          aria-label="Voice input"
+        >
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth={2}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="h-6 w-6"
+          >
+            <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" />
+            <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+            <line x1="12" x2="12" y1="19" y2="22" />
+          </svg>
+        </button>
+      )}
       <button
         type="button"
         onClick={() => setMode("scan")}
-        className="flex flex-1 cursor-pointer items-center justify-center gap-2.5 rounded-2xl border border-[#6bb8ff]/15 bg-[#6bb8ff]/[0.07] py-4 text-[#6bb8ff]/70 transition-all hover:border-[#6bb8ff]/25 hover:bg-[#6bb8ff]/[0.12] hover:text-[#6bb8ff]"
+        className="flex flex-1 cursor-pointer items-center justify-center rounded-2xl border border-[#6bb8ff]/15 bg-[#6bb8ff]/[0.07] py-4 text-[#6bb8ff]/70 transition-all hover:border-[#6bb8ff]/25 hover:bg-[#6bb8ff]/[0.12] hover:text-[#6bb8ff]"
         aria-label="Barcode scanner"
       >
         <svg
@@ -396,7 +417,7 @@ export function MealInput() {
           strokeWidth={2}
           strokeLinecap="round"
           strokeLinejoin="round"
-          className="h-5 w-5"
+          className="h-6 w-6"
         >
           <path d="M3 7V5a2 2 0 0 1 2-2h2" />
           <path d="M17 3h2a2 2 0 0 1 2 2v2" />
@@ -409,31 +430,7 @@ export function MealInput() {
           <line x1="14" y1="8" x2="14" y2="16" />
           <line x1="17" y1="8" x2="17" y2="16" />
         </svg>
-        <span className="text-sm font-medium">Scannen</span>
       </button>
-      {micSupported && (
-        <button
-          type="button"
-          onClick={handleMicTap}
-          className="flex flex-1 cursor-pointer items-center justify-center gap-2.5 rounded-2xl border border-[#b06bff]/15 bg-[#b06bff]/[0.07] py-4 text-[#b06bff]/70 transition-all hover:border-[#b06bff]/25 hover:bg-[#b06bff]/[0.12] hover:text-[#b06bff]"
-          aria-label="Voice input"
-        >
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth={2}
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="h-5 w-5"
-          >
-            <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" />
-            <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
-            <line x1="12" x2="12" y1="19" y2="22" />
-          </svg>
-          <span className="text-sm font-medium">Sprechen</span>
-        </button>
-      )}
     </div>
   );
 }

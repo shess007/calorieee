@@ -68,11 +68,11 @@ export function CalorieRing({ consumed, goal, size = 220, onTap }: CalorieRingPr
           kcal
         </span>
         <span
-          className={`mt-1.5 text-[13px] font-medium ${
-            overBudget ? "text-[#ff6b6b]" : "text-white/50"
+          className={`mt-1.5 text-[15px] font-semibold tracking-[-0.5px] ${
+            overBudget ? "text-[#ff6b6b]" : "text-[#7cff6b]/70"
           }`}
         >
-          {overBudget ? `+${consumed - goal} over` : `${remaining} left`}
+          {overBudget ? `+${consumed - goal} über Ziel` : `${remaining} übrig`}
         </span>
       </div>
     </div>
