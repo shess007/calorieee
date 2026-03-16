@@ -22,6 +22,7 @@ export default function Home() {
     selectedDate,
     initialized,
     init,
+    updateMeal,
     deleteMeal,
     setError,
     updateSettings,
@@ -133,6 +134,7 @@ export default function Home() {
                   meal={meal}
                   index={i}
                   onDelete={deleteMeal}
+                  onUpdate={updateMeal}
                 />
               ))}
             </div>

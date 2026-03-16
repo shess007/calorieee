@@ -20,6 +20,15 @@ export async function addMeal(meal: MealEntry): Promise<void> {
   if (!res.ok) throw new Error("Failed to save meal");
 }
 
+export async function updateMeal(meal: MealEntry): Promise<void> {
+  const res = await fetch(`/api/meals/${encodeURIComponent(meal.id)}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(meal),
+  });
+  if (!res.ok) throw new Error("Failed to update meal");
+}
+
 export async function deleteMeal(id: string): Promise<void> {
   const res = await fetch(`/api/meals/${encodeURIComponent(id)}`, {
     method: "DELETE",

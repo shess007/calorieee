@@ -5,6 +5,7 @@ import { toDateKey, getWeekDays, shiftByWeeks, isFuture } from "./date-utils";
 import {
   getMealsByDate,
   addMeal as dbAddMeal,
+  updateMeal as dbUpdateMeal,
   deleteMeal as dbDeleteMeal,
   getSettings,
   saveSettings,
@@ -36,6 +37,7 @@ interface FuelStore {
   setSelectedDate: (date: string) => void;
   loadMeals: (date?: string) => Promise<void>;
   addMeal: (meal: MealEntry) => Promise<void>;
+  updateMeal: (meal: MealEntry) => Promise<void>;
   deleteMeal: (id: string) => Promise<void>;
   setLoading: (loading: boolean) => void;
   setError: (error: string | null) => void;
@@ -99,6 +101,16 @@ export const useFuelStore = create<FuelStore>((set, get) => ({
     const meals = [meal, ...get().meals];
     set({ meals, totals: computeTotals(meals) });
     // Refresh week indicators since a new meal was added
+    const anchor = shiftByWeeks(new Date(), get().weekOffset);
+    const weekDays = getWeekDays(anchor);
+    get().loadWeekIndicators(weekDays);
+  },
+
+  updateMeal: async (meal: MealEntry) => {
+    await dbUpdateMeal(meal);
+    const meals = get().meals.map((m) => (m.id === meal.id ? meal : m));
+    set({ meals, totals: computeTotals(meals) });
+    // Refresh week indicators since totals changed
     const anchor = shiftByWeeks(new Date(), get().weekOffset);
     const weekDays = getWeekDays(anchor);
     get().loadWeekIndicators(weekDays);

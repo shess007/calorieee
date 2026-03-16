@@ -40,6 +40,24 @@ export async function dbAddMeal(
   `;
 }
 
+export async function dbUpdateMeal(
+  userEmail: string,
+  meal: MealEntry
+): Promise<void> {
+  const sql = getSQL();
+  const itemsJson = JSON.stringify(meal.items);
+  await sql`
+    UPDATE meals
+    SET meal_name = ${meal.meal_name},
+        items = ${itemsJson}::jsonb,
+        total_kcal = ${meal.total.kcal},
+        total_protein = ${meal.total.protein},
+        total_carbs = ${meal.total.carbs},
+        total_fat = ${meal.total.fat}
+    WHERE id = ${meal.id} AND user_email = ${userEmail}
+  `;
+}
+
 export async function dbDeleteMeal(
   userEmail: string,
   id: string
