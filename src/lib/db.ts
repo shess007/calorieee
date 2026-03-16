@@ -6,6 +6,7 @@ import { DEFAULT_SETTINGS } from "./constants";
 
 export async function getMealsByDate(date: string): Promise<MealEntry[]> {
   const res = await fetch(`/api/meals?date=${encodeURIComponent(date)}`);
+  if (res.status === 401) return []; // not logged in yet, middleware will redirect
   if (!res.ok) throw new Error("Failed to load meals");
   return res.json();
 }
@@ -28,7 +29,7 @@ export async function deleteMeal(id: string): Promise<void> {
 
 export async function getSettings(): Promise<UserSettings> {
   const res = await fetch("/api/settings");
-  if (!res.ok) return DEFAULT_SETTINGS;
+  if (!res.ok) return DEFAULT_SETTINGS; // includes 401 — returns defaults gracefully
   return res.json();
 }
 

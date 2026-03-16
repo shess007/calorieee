@@ -19,7 +19,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   callbacks: {
     signIn({ user }) {
       const allowed = getAllowedEmails();
-      console.log("[auth] sign-in attempt:", user.email, "| allowed:", [...allowed]);
       if (allowed.size === 0) return true; // no whitelist = allow all
       return allowed.has(user.email?.toLowerCase() || "");
     },
