@@ -4,9 +4,11 @@ import { useState, useRef, useCallback, useEffect } from "react";
 import { useFuelStore } from "@/lib/store";
 import { useSpeechRecognition } from "@/hooks/useSpeechRecognition";
 import { QuickChips } from "./QuickChips";
-import type { MealEntry } from "@/lib/types";
+import { BarcodeScanner } from "./BarcodeScanner";
+import { BarcodeMealReview } from "./BarcodeMealReview";
+import type { MealEntry, BarcodeProduct } from "@/lib/types";
 
-type InputMode = "idle" | "write" | "listen";
+type InputMode = "idle" | "write" | "listen" | "scan" | "review";
 
 const SPEECH_ERROR_MESSAGES: Record<string, Record<string, string>> = {
   de: {
@@ -27,6 +29,9 @@ export function MealInput() {
   const [input, setInput] = useState("");
   const [mode, setMode] = useState<InputMode>("idle");
   const [interim, setInterim] = useState("");
+  const [scannedProduct, setScannedProduct] = useState<BarcodeProduct | null>(
+    null
+  );
   const inputRef = useRef<HTMLInputElement>(null);
 
   const { loading, settings, setLoading, setError, addMeal, selectedDate } =
@@ -82,6 +87,80 @@ export function MealInput() {
     [input, loading, setLoading, setError, addMeal, selectedDate]
   );
 
+  const handleBarcodeScan = useCallback(
+    async (barcode: string) => {
+      setMode("idle");
+      setLoading(true);
+      setError(null);
+
+      try {
+        const res = await fetch(
+          `/api/lookup-barcode?code=${encodeURIComponent(barcode)}`
+        );
+
+        if (!res.ok) {
+          throw new Error("Barcode-Abfrage fehlgeschlagen");
+        }
+
+        const data = await res.json();
+
+        if (data.found && data.product) {
+          setScannedProduct(data.product);
+          setMode("review");
+        } else {
+          setError("Produkt nicht gefunden. Beschreib es stattdessen.");
+          setMode("write");
+        }
+      } catch (err) {
+        const message =
+          err instanceof Error ? err.message : "An error occurred";
+        setError(message);
+        setMode("idle");
+      } finally {
+        setLoading(false);
+      }
+    },
+    [setLoading, setError]
+  );
+
+  const handleBarcodeConfirm = useCallback(
+    async (grams: number) => {
+      if (!scannedProduct) return;
+
+      const p = scannedProduct;
+      const item = {
+        name: [p.brand, p.name].filter(Boolean).join(" "),
+        grams,
+        kcal: Math.round((p.per_100g.kcal * grams) / 100),
+        protein: Math.round((p.per_100g.protein * grams) / 100),
+        carbs: Math.round((p.per_100g.carbs * grams) / 100),
+        fat: Math.round((p.per_100g.fat * grams) / 100),
+      };
+
+      const meal: MealEntry = {
+        id:
+          Date.now().toString(36) +
+          Math.random().toString(36).slice(2, 6),
+        date: selectedDate,
+        timestamp: new Date().toISOString(),
+        query: `[Scan] ${item.name} ${grams}g`,
+        meal_name: item.name,
+        items: [item],
+        total: {
+          kcal: item.kcal,
+          protein: item.protein,
+          carbs: item.carbs,
+          fat: item.fat,
+        },
+      };
+
+      await addMeal(meal);
+      setScannedProduct(null);
+      setMode("idle");
+    },
+    [scannedProduct, selectedDate, addMeal]
+  );
+
   const {
     isSupported: micSupported,
     isListening,
@@ -135,6 +214,20 @@ export function MealInput() {
     toggleMic();
   };
 
+  // Review overlay (rendered on top of everything)
+  if (mode === "review" && scannedProduct) {
+    return (
+      <BarcodeMealReview
+        product={scannedProduct}
+        onConfirm={handleBarcodeConfirm}
+        onCancel={() => {
+          setScannedProduct(null);
+          setMode("idle");
+        }}
+      />
+    );
+  }
+
   // Loading state
   if (loading) {
     return (
@@ -163,6 +256,16 @@ export function MealInput() {
           Analysiere...
         </div>
       </div>
+    );
+  }
+
+  // Scan mode
+  if (mode === "scan") {
+    return (
+      <BarcodeScanner
+        onScan={handleBarcodeScan}
+        onCancel={() => setMode("idle")}
+      />
     );
   }
 
@@ -257,14 +360,62 @@ export function MealInput() {
     );
   }
 
-  // Idle state — two buttons
+  // Idle state — three buttons: Schreiben, Scannen, Sprechen
   return (
     <div className="mb-3 flex gap-3">
+      <button
+        type="button"
+        onClick={() => setMode("write")}
+        className="flex flex-1 cursor-pointer items-center justify-center gap-2.5 rounded-2xl border border-[#7cff6b]/15 bg-[#7cff6b]/[0.07] py-4 text-[#7cff6b]/70 transition-all hover:border-[#7cff6b]/25 hover:bg-[#7cff6b]/[0.12] hover:text-[#7cff6b]"
+        aria-label="Text input"
+      >
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth={2}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className="h-5 w-5"
+        >
+          <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
+          <path d="m15 5 4 4" />
+        </svg>
+        <span className="text-sm font-medium">Schreiben</span>
+      </button>
+      <button
+        type="button"
+        onClick={() => setMode("scan")}
+        className="flex flex-1 cursor-pointer items-center justify-center gap-2.5 rounded-2xl border border-[#6bb8ff]/15 bg-[#6bb8ff]/[0.07] py-4 text-[#6bb8ff]/70 transition-all hover:border-[#6bb8ff]/25 hover:bg-[#6bb8ff]/[0.12] hover:text-[#6bb8ff]"
+        aria-label="Barcode scanner"
+      >
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth={2}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className="h-5 w-5"
+        >
+          <path d="M3 7V5a2 2 0 0 1 2-2h2" />
+          <path d="M17 3h2a2 2 0 0 1 2 2v2" />
+          <path d="M21 17v2a2 2 0 0 1-2 2h-2" />
+          <path d="M7 21H5a2 2 0 0 1-2-2v-2" />
+          <line x1="7" y1="12" x2="17" y2="12" />
+          <line x1="7" y1="8" x2="9" y2="8" />
+          <line x1="7" y1="16" x2="9" y2="16" />
+          <line x1="11" y1="8" x2="11" y2="16" />
+          <line x1="14" y1="8" x2="14" y2="16" />
+          <line x1="17" y1="8" x2="17" y2="16" />
+        </svg>
+        <span className="text-sm font-medium">Scannen</span>
+      </button>
       {micSupported && (
         <button
           type="button"
           onClick={handleMicTap}
-          className="flex flex-1 cursor-pointer items-center justify-center gap-2.5 rounded-2xl border border-white/[0.06] bg-white/[0.03] py-4 text-white/40 transition-all hover:border-[#7cff6b]/20 hover:bg-[#7cff6b]/[0.05] hover:text-[#7cff6b]"
+          className="flex flex-1 cursor-pointer items-center justify-center gap-2.5 rounded-2xl border border-[#b06bff]/15 bg-[#b06bff]/[0.07] py-4 text-[#b06bff]/70 transition-all hover:border-[#b06bff]/25 hover:bg-[#b06bff]/[0.12] hover:text-[#b06bff]"
           aria-label="Voice input"
         >
           <svg
@@ -283,26 +434,6 @@ export function MealInput() {
           <span className="text-sm font-medium">Sprechen</span>
         </button>
       )}
-      <button
-        type="button"
-        onClick={() => setMode("write")}
-        className="flex flex-1 cursor-pointer items-center justify-center gap-2.5 rounded-2xl border border-white/[0.06] bg-white/[0.03] py-4 text-white/40 transition-all hover:border-[#7cff6b]/20 hover:bg-[#7cff6b]/[0.05] hover:text-[#7cff6b]"
-        aria-label="Text input"
-      >
-        <svg
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth={2}
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          className="h-5 w-5"
-        >
-          <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
-          <path d="m15 5 4 4" />
-        </svg>
-        <span className="text-sm font-medium">Schreiben</span>
-      </button>
     </div>
   );
 }

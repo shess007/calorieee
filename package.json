@@ -14,6 +14,7 @@
     "next-auth": "^5.0.0-beta.30",
     "react": "19.2.3",
     "react-dom": "19.2.3",
+    "react-zxing": "^2.1.0",
     "zustand": "^5.0.11"
   },
   "devDependencies": {

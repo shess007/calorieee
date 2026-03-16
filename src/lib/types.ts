@@ -24,6 +24,14 @@ export interface MealEntry {
   total: MacroTotals;
 }
 
+export interface BarcodeProduct {
+  name: string;
+  brand: string;
+  image_url: string;
+  serving_size_g: number | null;
+  per_100g: MacroTotals;
+}
+
 export interface UserSettings {
   dailyCalorieGoal: number;
   proteinGoal: number;
