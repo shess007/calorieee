@@ -362,7 +362,7 @@ export function MealInput() {
 
   // Idle state — three buttons: Schreiben, Scannen, Sprechen
   return (
-    <div className="mb-3 flex gap-3">
+    <div className="mb-6 flex gap-3">
       <button
         type="button"
         onClick={() => setMode("write")}

@@ -52,6 +52,11 @@ export default function Home() {
   return (
     <div className="min-h-screen w-full overflow-x-hidden animate-[fadeIn_0.6s_ease]">
       <div className="mx-auto box-border w-full max-w-[440px] px-5 pb-24 pt-10">
+        {/* Header */}
+        <h1 className="mb-4 text-center bg-gradient-to-br from-[#7cff6b] to-[#00d4aa] bg-clip-text text-[28px] font-bold tracking-[-1px] text-transparent">
+          Calorieee
+        </h1>
+
         {/* Day Navigator */}
         <DayNavigator />
 
